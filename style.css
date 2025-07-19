@@ -1,0 +1,22 @@
+header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+main {
+  display: flex;
+  justify-content: space-around;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  padding: 5px;
+}
+
+.guess-top-section {
+  display: flex;
+}
