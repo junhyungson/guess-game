@@ -9,71 +9,104 @@ const highscoreEl = document.querySelector('.highscore') as HTMLElement;
 const checkBtn = document.querySelector('.check') as HTMLButtonElement;
 const againBtn = document.querySelector('.again') as HTMLElement;
 
+
+
+// === Constants ===
+const INITIAL_SCORE = 20;
+const MIN_NUMBER = 1;
+const MAX_NUMBER = 20;
+const COLORS = {
+  success: '#60b347',
+  failure: '#8b0000',
+  default: '#222'
+};
 // === Game State ===
 let secretNumber = Math.trunc(Math.random() * 20) + 1;
-let score = 20;
+let score = INITIAL_SCORE
 let highscore = 0;
 
-// secretNumberEl.textContent = secretNumber.toString()
+// UTILITY FUNCTIONS
+function displayMessage(msg: string): void {
+  messageEl.textContent = msg
+}
 
-console.log(secretNumber)
-checkBtn.addEventListener("click", function () {
-  const guess = Number(guessEl.value.trim());
+function resetGameUI() {
+  displayMessage("Start guessing...");
+  secretNumberEl.textContent = "?";
+  guessEl.value = "";
+  checkBtn.disabled = false;
+  document.body.style.backgroundColor = COLORS.default;
+  secretNumberEl.style.width = '15rem';
+  scoreEl.textContent = score.toString();
+}
+function setWinUI(guess: number) {
+  displayMessage("🎉 Correct Number!");
+  secretNumberEl.textContent = guess.toString();
+  secretNumberEl.style.width = '30rem';
+  document.body.style.backgroundColor = COLORS.success;
+  checkBtn.disabled = true;
+}
 
-  // === 1. Input Validation ===
-  if (!guessEl.value.trim() || isNaN(guess)) {
-    messageEl.textContent = `Please enter a valid number!`;
-    return;
+function setLoseUI() {
+  displayMessage("💥 You lost the game!");
+  scoreEl.textContent = '0';
+  document.body.style.backgroundColor = COLORS.failure;
+  checkBtn.disabled = true;
+}
+function getValidatedGuess(): number | null {
+  const rawInput = guessEl.value.trim();
+  const guess = Number(rawInput);
+
+  if (!rawInput || isNaN(guess)) {
+    displayMessage("Please enter a valid number!");
+    return null;
   }
 
   if (!Number.isInteger(guess)) {
-    messageEl.textContent = "Only whole numbers are allowed!";
-    return;
+    displayMessage("Only whole numbers are allowed!");
+    return null;
   }
 
-  if (guess < 1 || guess > 20) {
-    messageEl.textContent = "Guess must be between 1 and 20.";
-    return;
+  if (guess < MIN_NUMBER || guess > MAX_NUMBER) {
+    displayMessage("Guess must be between 1 and 20.");
+    return null;
   }
 
-  // === 2. Game Logic ===
+  return guess;
+}
+
+
+function handleGuess(guess: number): void {
   if (guess === secretNumber) {
-    messageEl.textContent = "🎉 Correct Number!";
-    secretNumberEl.textContent = guess.toString();
-    document.body.style.backgroundColor = '#60b347'; // success green
-    secretNumberEl.style.width = '30rem';
-    checkBtn.disabled = true;
+    setWinUI(guess);
 
     if (score > highscore) {
       highscore = score;
-      highscoreEl.textContent = score.toString();
+      highscoreEl.textContent = highscore.toString();
     }
-    return;
-  }
-
-  // === 3. Wrong Guess ===
-  score--;
-  if (score > 0) {
-    messageEl.textContent = guess > secretNumber ? "📈 Too high!" : "📉 Too low!";
-    scoreEl.textContent = score.toString();
   } else {
-    messageEl.textContent = "💥 You lost the game!";
-    scoreEl.textContent = '0';
-    document.body.style.backgroundColor = '#8b0000'; // lose red
+    score--;
+    if (score > 0) {
+      displayMessage(guess > secretNumber ? "📈 Too high!" : "📉 Too low!");
+      scoreEl.textContent = score.toString();
+    } else {
+      setLoseUI();
+    }
+  }
+}
+
+checkBtn.addEventListener("click", function () {
+  const guess = getValidatedGuess();
+  if (guess !== null) {
+    handleGuess(guess);
   }
 });
 
+
 againBtn.addEventListener("click", function () {
-  secretNumber = Math.trunc(Math.random() * 20) + 1;
-  score = 20;
+  secretNumber = Math.trunc(Math.random() * MAX_NUMBER) + 1;
+  score = INITIAL_SCORE
+  resetGameUI();
+
   console.log(secretNumber);
-
-  messageEl.textContent = "Start guessing...";
-  secretNumberEl.textContent = "?";
-  scoreEl.textContent = score.toString();
-  guessEl.value = "";
-  checkBtn.disabled = false;
-
-  document.body.style.backgroundColor = '#222'; // reset bg
-  secretNumberEl.style.width = '15rem'; // reset width if modified
 });
