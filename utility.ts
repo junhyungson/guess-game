@@ -5,6 +5,9 @@ export function displayMessage(messageEl: HTMLElement, msg: string): void {
 }
 
 export function getValidatedGuess(
+  /*
+  get  user input and validate between 1 and 20, and is a number
+  */
   guessEl: HTMLInputElement,
   messageEl: HTMLElement
 ): number | null {

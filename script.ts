@@ -1,5 +1,6 @@
 // script.ts
 import { INITIAL_SCORE, MAX_NUMBER } from './constants';
+// Uncaught SyntaxError: Cannot use import statement outside a module (at script.ts:1:1)
 import { againBtn, checkBtn, guessEl, highscoreEl, messageEl, scoreEl } from './doms';
 import { resetGameUI, setLoseUI, setWinUI } from './ui';
 import { displayMessage, getValidatedGuess } from './utility';
